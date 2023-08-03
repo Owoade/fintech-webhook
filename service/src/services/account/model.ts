@@ -2,14 +2,13 @@ import db from "../../db";
 import { DataTypes, Model, Optional } from "sequelize";
 import model_types from "../../utils/models";
 import { IMerchant } from "./types";
+import { Transaction } from "../transaction/model";
 
-export const Merchant = db.define<Model<IMerchant, Optional<IMerchant, "id">>>("Merchants", {
-
-    id: model_types.primary_key(),
-
-    merchant_id: model_types.string(),
+export const Merchant = db.define<Model<IMerchant, Optional<IMerchant, "id" >>>("Merchants", {
 
     email: model_types.unique_string(),
+
+    id: model_types.primary_key(),
 
     password: model_types.string(),
 
@@ -19,11 +18,16 @@ export const Merchant = db.define<Model<IMerchant, Optional<IMerchant, "id">>>("
 
     public_key: model_types.string(),
 
-    balance: model_types.float()
+    balance: model_types.double()
 
 })
 
-Merchant.sync()
+Merchant.hasMany( Transaction)
+
+Transaction.belongsTo(Merchant);
+
+Merchant.sync( { alter: true })
+
 
 
 

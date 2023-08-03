@@ -18,7 +18,6 @@ class AccountService {
 
     const secret_key = `sk_${this.create_key()}`;
 
-    const merchant_id = crypto.randomUUID();
 
     payload.password = this.hash_password(payload.password);
 
@@ -26,8 +25,7 @@ class AccountService {
       ...payload,
       public_key,
       secret_key,
-      merchant_id,
-      balance,
+      balance
     });
 
     merchant.password! = undefined as any;
@@ -62,6 +60,14 @@ class AccountService {
     }
 
   }
+
+  private generate_random_number() {
+    const max = 99999;
+    const min = 10000;
+    const random_number = crypto.randomInt(min, max);
+    return random_number;
+  }
+  
 
   private hash_password(password: string) {
     return crypto.createHash("sha256").update(password).digest("hex");

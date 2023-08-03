@@ -29,6 +29,27 @@ const model_types = {
     };
   },
 
+  double(){
+    return {
+      type: DataTypes.DOUBLE,
+      allowNull: false
+    }
+
+  },
+
+  enum(...val: string[]){
+    return {
+      type: DataTypes.ENUM(...val),
+      allowNull: false
+    }
+  },
+
+  int_auto(){
+    return {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+    };
+  },
 
 
   primary_key() {

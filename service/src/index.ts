@@ -5,6 +5,9 @@ import { config } from "dotenv"
 import cors from "cors";
 import account_router from "./services/account/route";
 import db from "./db";
+import transaction_router from "./services/transaction/route";
+import { Merchant } from "./services/account/model";
+import { Transaction } from "./services/transaction/model";
 
 config();
 
@@ -17,11 +20,15 @@ app.use(cors({
     origin: "*"
 }))
 
-app.use("/account", account_router)
+app.use("/account", account_router);
+
+app.use("/transaction", transaction_router);
 
 const PORT = process.env.PORT ?? 5000;
 
 Promise.all([db.authenticate(), app.listen(PORT) ])
 
-.then( ()=> console.log("The server is running fine and good"))
+.then( async ()=>{
+     console.log("The server is running fine and good");
+    })
 

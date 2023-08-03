@@ -52,10 +52,12 @@ const ServiceDecorator = {
 
         }catch(e: any){
 
+          console.log(e)
+
             respond( response, {
                 code: 400,
                 data: {},
-                message: e?.errors?.[0]?.message
+                message: e?.message ?? e?.errors?.[0]?.message
             })
             
         }

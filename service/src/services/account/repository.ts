@@ -30,6 +30,22 @@ class AccountRepository {
     
   }
 
+  async retrieve_merchant_by_id( merchant_id: number ){
+
+    const _merchant = await Merchant.findOne({ where: { id: merchant_id }});
+
+    const merchant = _merchant?.toJSON();
+
+    return merchant;
+
+  }
+
+  async update_balance( id: number, inc: number ){
+
+    await Merchant.increment({balance: inc}, {where: { id }})
+    
+  }
+
   
 
 }
