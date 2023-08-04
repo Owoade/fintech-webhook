@@ -1,7 +1,9 @@
+import { Request, Response } from "express";
 import job_repository from "./repository";
 import { IJob } from "./type";
 
 class JobService {
+
     constructor(){
         this.init = this.init.bind(this);
         this.schedule = this.schedule.bind(this);
@@ -40,61 +42,70 @@ class JobService {
 
         let timeout_id: number;
 
-        try{
+        timeout_id = setTimeout(() => this.reschedule(payload), 10000) as any;
 
-            timeout_id =0
+        payload .job()
 
-            await payload.job()
+          .then(async () => {
 
-            clearTimeout(timeout_id);
-    
             console.log(">>>>>>Job Fufilled<<<<<<", "LOG");
 
-            job_repository.update_status( payload.job_id, "fufilled");
-    
-            // .then( ()=>{
-    
-               
-    
-            // })
+            clearTimeout(timeout_id);
 
-        }catch( e ){
+            job_repository.update_status(payload.job_id, "fufilled");
 
-            clearTimeout( payload.job_id );
+          })
+          .catch(async  ()=> {
 
-            if( payload.duration === "instant" ){
+            clearTimeout(timeout_id);
 
-                payload.duration = "minutes";
+            await this.reschedule(payload);
 
-                payload.retry = 4;
+          })
 
-                await job_repository.update_count_and_duration( {
-                    id: payload.job_id,
-                    count: payload.retry,
-                    duration: payload.duration
-                })
+    }
 
-            }
+    async reschedule( payload: InitiateJob ){
 
-            if( payload.duration === "minutes" && payload.retry === 0 ){
+        if( payload.duration === "instant" ){
 
-                payload.duration = "hours";
+            payload.duration = "minutes";
 
-                payload.retry = 72;
+            payload.retry = 4;
 
-            }
+            await job_repository.update_count_and_duration( {
+                id: payload.job_id,
+                count: payload.retry,
+                duration: payload.duration
+            })
 
-            payload.retry -= 1;
-
-            console.log( payload)
-
-            await job_repository.update_retry_count( payload.job_id, payload.retry - 1 );
-
-           console.log(`>>>>>>Job Failed, Retries${payload.retry} <<<<<`)
-
-           await this.schedule(payload);
-   
         }
+
+        if( payload.duration === "minutes" && payload.retry === 0 ){
+
+            payload.duration = "hours";
+
+            payload.retry = 72;
+
+            await job_repository.update_duration(payload.job_id, payload.duration);
+
+        }
+
+        payload.retry -= 1;
+
+        console.log( payload)
+
+        await job_repository.update_retry_count( payload.job_id, payload.retry - 1 );
+
+       console.log(`>>>>>>Job Failed, Retries ${payload.retry} <<<<<`)
+
+       await this.schedule(payload);
+
+    }
+
+    async get_all_jobs(  ){
+        
+        return ( await job_repository.get_all_jobs() )
 
     }
 }

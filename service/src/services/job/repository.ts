@@ -46,12 +46,28 @@ class JobRepository {
 
     }
 
+    async update_duration( id: number, duration: IJob['duration']){
+
+        await Job.update({ duration }, { where: { id }});
+
+        return true;
+
+    }
+
     async update_retry_count( id: number, count: number ){
 
         await Job.update( { retry_count: count }, { where: { id } })
 
         return true;
 
+    }
+
+    async get_all_jobs(){
+
+        const jobs = await Job.findAll();
+
+        return jobs;
+        
     }
 
 }

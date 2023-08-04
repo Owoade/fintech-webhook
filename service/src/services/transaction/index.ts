@@ -45,7 +45,11 @@ class TransactionService {
 
     await job_service.schedule({
         job(){
-            return axios.get('http://localhost:4000')
+            return axios.post('http://localhost:1200/web-hook', {
+              type: payload.type,
+              amount: payload.amount,
+              merchan_id: payload.merchant_id
+            })
         },
         job_id: job.id as number,
         duration: "instant",
